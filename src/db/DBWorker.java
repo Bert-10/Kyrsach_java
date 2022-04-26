@@ -42,6 +42,10 @@ public class DBWorker {
         try {
             Statement statement = connection.createStatement();
             statement.execute("CREATE TABLE if not exists 'fridge' ('name' STRING PRIMARY KEY, 'amount' DOUBLE NOT NULL, 'unit' text);");
+            statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' text);");
+            statement.execute("CREATE TABLE if not exists 'products' ('name' STRING PRIMARY KEY, 'unit' text);");
+            statement.execute("CREATE TABLE if not exists 'connect' ('connect_id' INTEGER PRIMARY KEY AUTOINCREMENT,'recipe_id' INTEGER , 'product_name' STRING ,'amount' DOUBLE NOT NULL, FOREIGN KEY (recipe_id) REFERENCES recipes (id), FOREIGN KEY (product_name) REFERENCES products (name));");
+          //  statmt.execute("CREATE TABLE if not exists 'students' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'lastname' text,'name' text,'email' text, 'group_id' INTEGER NOT NULL, FOREIGN KEY (group_id) REFERENCES groups (id));");
             System.out.println("Таблицы созданы");
             statement.close();
         } catch (SQLException e) {
@@ -49,13 +53,26 @@ public class DBWorker {
         }
     }
 
-    public static void addProduct(Product product)
+    public static void addProductToFridge(Product product)
     {
         try {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('name','amount','unit')"+"VALUES(?,?,?)");
             statement.setObject(1,product.getName());
             statement.setObject(2,product.getAmount());
             statement.setObject(3,product.getUnit());
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addToProducts(Product product)
+    {
+        try {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO products('name','unit')"+"VALUES(?,?)");
+            statement.setObject(1,product.getName());
+            statement.setObject(2,product.getUnit());
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -76,7 +93,6 @@ public class DBWorker {
             }
             resultSet.close();
             statement.close();
-
 
         } catch (SQLException e) {
 
