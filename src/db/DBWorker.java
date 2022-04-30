@@ -1,5 +1,7 @@
 package db;
 
+import models.Connects.Connect;
+import models.Pecipes.Recipe;
 import models.Products.Product;
 
 import java.sql.*;
@@ -40,7 +42,8 @@ public class DBWorker {
     {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5));");
+          //  statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5));");
+            statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY,'name' VARCHAR(30), 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5), FOREIGN KEY (id) REFERENCES products (id));");
             statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' VARCHAR(30),'favorite' boolean);");
             statement.execute("CREATE TABLE if not exists 'products' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'unit' VARCHAR(5));");
             statement.execute("CREATE TABLE if not exists 'connect' ('connect_id' INTEGER PRIMARY KEY AUTOINCREMENT,'recipe_id' INTEGER , 'product_id' INTEGER ,'amount' DOUBLE NOT NULL, FOREIGN KEY (recipe_id) REFERENCES recipes (id), FOREIGN KEY (product_id) REFERENCES products (id));");
@@ -51,6 +54,21 @@ public class DBWorker {
             e.printStackTrace();
         }
     }
+
+    public static void addConnection(Connect connect)
+    {
+        try {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO connect('recipe_id','product_id','amount')"+"VALUES(?,?,?)");
+            statement.setObject(1,connect.getRecipeId());
+            statement.setObject(2,connect.getProductId());
+            statement.setObject(3,connect.getAmount());
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void addProductToFridge(Product product)
     {
@@ -66,9 +84,20 @@ public class DBWorker {
         }
     }
 
+    public static void addRecipe(Recipe recipe)
+    {
+        try {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO recipes('name','favorite')"+"VALUES(?,?)");
+            statement.setObject(1,recipe.getName());
+            statement.setObject(2,recipe.getFavorite());
+            statement.execute();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-
-    public static void addToProducts(Product product)
+    public static void addProduct(Product product)
     {
         try {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO products('name','unit')"+"VALUES(?,?)");
