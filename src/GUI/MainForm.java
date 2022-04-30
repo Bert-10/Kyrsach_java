@@ -1,14 +1,12 @@
 package GUI;
 
 import db.DBWorker;
-import model.ProductModel;
+import models.Products.ProductModel;
 
 import javax.swing.*;
-import javax.swing.JComboBox;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.SQLException;
 
 public class MainForm extends JFrame {
     private JTable productsTable;

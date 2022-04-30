@@ -1,8 +1,7 @@
 package db;
 
-import model.Product;
+import models.Products.Product;
 
-import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -41,10 +40,10 @@ public class DBWorker {
     {
         try {
             Statement statement = connection.createStatement();
-            statement.execute("CREATE TABLE if not exists 'fridge' ('name' STRING PRIMARY KEY, 'amount' DOUBLE NOT NULL, 'unit' text);");
-            statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' text);");
-            statement.execute("CREATE TABLE if not exists 'products' ('name' STRING PRIMARY KEY, 'unit' text);");
-            statement.execute("CREATE TABLE if not exists 'connect' ('connect_id' INTEGER PRIMARY KEY AUTOINCREMENT,'recipe_id' INTEGER , 'product_name' STRING ,'amount' DOUBLE NOT NULL, FOREIGN KEY (recipe_id) REFERENCES recipes (id), FOREIGN KEY (product_name) REFERENCES products (name));");
+            statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5));");
+            statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' VARCHAR(30),'favorite' boolean);");
+            statement.execute("CREATE TABLE if not exists 'products' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'unit' VARCHAR(5));");
+            statement.execute("CREATE TABLE if not exists 'connect' ('connect_id' INTEGER PRIMARY KEY AUTOINCREMENT,'recipe_id' INTEGER , 'product_id' INTEGER ,'amount' DOUBLE NOT NULL, FOREIGN KEY (recipe_id) REFERENCES recipes (id), FOREIGN KEY (product_id) REFERENCES products (id));");
           //  statmt.execute("CREATE TABLE if not exists 'students' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'lastname' text,'name' text,'email' text, 'group_id' INTEGER NOT NULL, FOREIGN KEY (group_id) REFERENCES groups (id));");
             System.out.println("Таблицы созданы");
             statement.close();
@@ -66,6 +65,8 @@ public class DBWorker {
             e.printStackTrace();
         }
     }
+
+
 
     public static void addToProducts(Product product)
     {

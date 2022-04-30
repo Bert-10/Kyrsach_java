@@ -1,8 +1,6 @@
 package com.company;
 
 import GUI.MainForm;
-import db.DBWorker;
-import model.Product;
 
 public class Main {
 
