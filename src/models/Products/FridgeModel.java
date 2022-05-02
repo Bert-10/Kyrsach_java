@@ -5,10 +5,10 @@ import models.Products.Product;
 import javax.swing.table.AbstractTableModel;
 import java.util.List;
 
-public class ProductModel extends AbstractTableModel {
+public class FridgeModel extends AbstractTableModel {
     private List<Product> data;
 
-    public ProductModel(List<Product> products){
+    public FridgeModel(List<Product> products){
         data = products;
     }
 

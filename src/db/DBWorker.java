@@ -18,8 +18,6 @@ public class DBWorker {
      //    /*
           if(connection!=null)
           {
-          //    DatabaseMetaData metaData = connection.getMetaData();
-          //    System.out.print(metaData.getDriverName());
               createDB();
           }
        //   */
@@ -27,6 +25,21 @@ public class DBWorker {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+     //  /*
+        //addProductToFridge(new Product("молоко",2,"л"));
+     //   /*
+        addProduct(new Product("фарш","кг"));
+        addProduct(new Product("молоко","л"));
+        addProduct(new Product("яйцо","шт"));
+        addProduct(new Product("сыр","кг"));
+        addProduct(new Product("картофель","кг"));
+     //   */
+        addRecipe(new Recipe("яичница","нет"));
+        addRecipe(new Recipe("Фарш с картошкой","нет"));
+      //  addConnection(new Connect(3,4,5));
+        //getAllProducts();
+      //  */
+
     }
 
     public static  void closeDB()
@@ -43,9 +56,9 @@ public class DBWorker {
         try {
             Statement statement = connection.createStatement();
           //  statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5));");
-            statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY,'name' VARCHAR(30), 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5), FOREIGN KEY (id) REFERENCES products (id));");
-            statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' VARCHAR(30),'favorite' boolean);");
-            statement.execute("CREATE TABLE if not exists 'products' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'unit' VARCHAR(5));");
+            statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' VARCHAR(30),'favorite' VARCHAR(5));");
+            statement.execute("CREATE TABLE if not exists 'products' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30) UNIQUE, 'unit' VARCHAR(5));");
+            statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY,'name' VARCHAR(30) UNIQUE, 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5), FOREIGN KEY (id) REFERENCES products (id));");
             statement.execute("CREATE TABLE if not exists 'connect' ('connect_id' INTEGER PRIMARY KEY AUTOINCREMENT,'recipe_id' INTEGER , 'product_id' INTEGER ,'amount' DOUBLE NOT NULL, FOREIGN KEY (recipe_id) REFERENCES recipes (id), FOREIGN KEY (product_id) REFERENCES products (id));");
           //  statmt.execute("CREATE TABLE if not exists 'students' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'lastname' text,'name' text,'email' text, 'group_id' INTEGER NOT NULL, FOREIGN KEY (group_id) REFERENCES groups (id));");
             System.out.println("Таблицы созданы");
@@ -74,9 +87,18 @@ public class DBWorker {
     {
         try {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('name','amount','unit')"+"VALUES(?,?,?)");
+        //    PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('id','name','amount','unit')"+"VALUES(?,?,?,?)");
+      //    /*
             statement.setObject(1,product.getName());
             statement.setObject(2,product.getAmount());
             statement.setObject(3,product.getUnit());
+         //   */
+            /*
+            statement.setObject(1,4);
+            statement.setObject(2,product.getName());
+            statement.setObject(3,product.getAmount());
+            statement.setObject(4,product.getUnit());
+*/
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -110,16 +132,16 @@ public class DBWorker {
         }
     }
 
-    public static ArrayList<Product> getAllFridge()
+    public static ArrayList<Product> getAllProducts()
     {
         ArrayList<Product> list = new ArrayList<Product>();
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM fridge");
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM products");
             while(resultSet.next())
             {
-              //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3));
-                list.add(new Product(resultSet.getString(1),Double.parseDouble(resultSet.getString(2)),resultSet.getString(3)));
+                //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+                list.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),0,resultSet.getString(3)));
             }
             resultSet.close();
             statement.close();
@@ -128,6 +150,97 @@ public class DBWorker {
 
             e.printStackTrace();
         }
+        return list;
+    }
+
+    public static ArrayList<Recipe> getAllRecipes()
+    {
+        ArrayList<Recipe> list = new ArrayList<Recipe>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM recipes");
+            while(resultSet.next())
+            {
+                //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3));
+                list.add(new Recipe(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),resultSet.getString(3)));
+            }
+            resultSet.close();
+            statement.close();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public static ArrayList<Product> getAllFridge()
+    {
+        ArrayList<Product> list = new ArrayList<Product>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM fridge");
+            while(resultSet.next())
+            {
+              //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+                list.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Double.parseDouble(resultSet.getString(3)),resultSet.getString(4)));
+            }
+            resultSet.close();
+            statement.close();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+    public static ArrayList<Connect> getAllConnection()
+    {
+        ArrayList<Connect> list = new ArrayList<Connect>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM connect");
+            while(resultSet.next())
+            {
+                  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+            //    list.add(new Connect(Integer.parseInt(resultSet.getString(2)),Integer.parseInt(resultSet.getString(3)),Integer.parseInt(resultSet.getString(4))));
+            }
+            resultSet.close();
+            statement.close();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
+    public static ArrayList<Recipe> availableRecipes ()
+    {
+        ArrayList<Recipe> listRecipes = getAllRecipes();
+        ArrayList<Recipe> list=new ArrayList<Recipe>();
+        for(int i=0;i<listRecipes.size();i++)
+        {
+            try {
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery("SELECT FROM connect WHERE connect.recipe_id ="+listRecipes.get(i).getId());
+                while(resultSet.next())
+                {
+                    System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+                    /// list.add(new Recipe(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Boolean.parseBoolean(resultSet.getString(3))));
+                }
+                resultSet.close();
+                statement.close();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
         return list;
     }
 
