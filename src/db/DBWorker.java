@@ -15,31 +15,39 @@ public class DBWorker {
     {
         try {
           connection = DriverManager.getConnection(URL);
-     //    /*
           if(connection!=null)
           {
               createDB();
           }
-       //   */
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-     //  /*
-        //addProductToFridge(new Product("молоко",2,"л"));
-     //   /*
+
+        /*
         addProduct(new Product("фарш","кг"));
         addProduct(new Product("молоко","л"));
         addProduct(new Product("яйцо","шт"));
         addProduct(new Product("сыр","кг"));
         addProduct(new Product("картофель","кг"));
-     //   */
+
         addRecipe(new Recipe("яичница","нет"));
         addRecipe(new Recipe("Фарш с картошкой","нет"));
-      //  addConnection(new Connect(3,4,5));
-        //getAllProducts();
-      //  */
 
+        addConnection(new Connect(1,3,4));
+        addConnection(new Connect(2,1,1.3));
+        addConnection(new Connect(2,5,2));
+
+        addProductToFridge(new Product(1,"фарш",1,"кг"));
+        addProductToFridge(new Product(5,"картофель",4,"кг"));
+        addProductToFridge(new Product(3,"яйцо",10,"шт"));
+   //        */;
+        //getAllProducts();
+
+
+      //  getAllConnection();
+      //  System.out.println("");
+        availableRecipes ();
     }
 
     public static  void closeDB()
@@ -86,19 +94,15 @@ public class DBWorker {
     public static void addProductToFridge(Product product)
     {
         try {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('name','amount','unit')"+"VALUES(?,?,?)");
-        //    PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('id','name','amount','unit')"+"VALUES(?,?,?,?)");
-      //    /*
-            statement.setObject(1,product.getName());
-            statement.setObject(2,product.getAmount());
-            statement.setObject(3,product.getUnit());
-         //   */
-            /*
-            statement.setObject(1,4);
+          //  PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('name','amount','unit')"+"VALUES(?,?,?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('id','name','amount','unit')"+"VALUES(?,?,?,?)");
+
+            statement.setObject(1,product.getId());
             statement.setObject(2,product.getName());
             statement.setObject(3,product.getAmount());
             statement.setObject(4,product.getUnit());
-*/
+
+
             statement.execute();
             statement.close();
         } catch (SQLException e) {
@@ -161,7 +165,7 @@ public class DBWorker {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM recipes");
             while(resultSet.next())
             {
-                //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3));
+              //    System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3));
                 list.add(new Recipe(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),resultSet.getString(3)));
             }
             resultSet.close();
@@ -182,7 +186,7 @@ public class DBWorker {
             ResultSet resultSet = statement.executeQuery("SELECT * FROM fridge");
             while(resultSet.next())
             {
-              //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+             //   System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
                 list.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Double.parseDouble(resultSet.getString(3)),resultSet.getString(4)));
             }
             resultSet.close();
@@ -205,7 +209,7 @@ public class DBWorker {
             while(resultSet.next())
             {
                   System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
-            //    list.add(new Connect(Integer.parseInt(resultSet.getString(2)),Integer.parseInt(resultSet.getString(3)),Integer.parseInt(resultSet.getString(4))));
+            //    list.add(new Connect(Integer.parseInt(resultSet.getString(2)),Integer.parseInt(resultSet.getString(3)),Double.parseDouble(resultSet.getString(4))));
             }
             resultSet.close();
             statement.close();
@@ -221,27 +225,53 @@ public class DBWorker {
     public static ArrayList<Recipe> availableRecipes ()
     {
         ArrayList<Recipe> listRecipes = getAllRecipes();
-        ArrayList<Recipe> list=new ArrayList<Recipe>();
+        ArrayList<Recipe> itog=new ArrayList<Recipe>();
+        ArrayList<Connect> listConnect = new ArrayList<Connect>();
+        ArrayList<Product> listProducts = new ArrayList<Product>();
         for(int i=0;i<listRecipes.size();i++)
         {
             try {
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery("SELECT FROM connect WHERE connect.recipe_id ="+listRecipes.get(i).getId());
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM connect WHERE connect.recipe_id ="+listRecipes.get(i).getId());
                 while(resultSet.next())
                 {
-                    System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
-                    /// list.add(new Recipe(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Boolean.parseBoolean(resultSet.getString(3))));
+                  //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+                  //   list.add(new Recipe(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),resultSet.getString(3)));
+                    listConnect.add(new Connect(Integer.parseInt(resultSet.getString(2)),Integer.parseInt(resultSet.getString(3)),Double.parseDouble(resultSet.getString(4))));
                 }
                 resultSet.close();
                 statement.close();
-
             } catch (SQLException e) {
                 e.printStackTrace();
             }
+
+            for(int j=0;j<listConnect.size();j++)
+            {
+                try {
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT * FROM fridge WHERE fridge.id ="+listConnect.get(j).getProductId()+" AND fridge.amount >="+listConnect.get(j).getAmount());
+                    while(resultSet.next())
+                    {
+                     //   System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
+                        listProducts.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Double.parseDouble(resultSet.getString(3)),resultSet.getString(4)));
+                    }
+                    resultSet.close();
+                    statement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if(listConnect.size()==listProducts.size())
+            {
+                itog.add(new Recipe(Integer.parseInt(listRecipes.get(i).getId()),listRecipes.get(i).getName(),listRecipes.get(i).getFavorite()));
+            }
+            listConnect.clear();
+            listProducts.clear();
         }
 
 
-        return list;
+        return itog;
     }
 
 }

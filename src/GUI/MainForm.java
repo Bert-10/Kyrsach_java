@@ -73,6 +73,7 @@ public class MainForm extends JFrame {
         showFridge.addActionListener(e-> showFridge());
         showProducts.addActionListener(e-> showProducts());
         showRecipes.addActionListener(e->showRecipes());
+        showAvailableRecipes.addActionListener(e->showAvailableRecipes());
         menuBar.add(file);
         setJMenuBar(menuBar);
     }
@@ -109,4 +110,16 @@ public class MainForm extends JFrame {
         contentPane.add(new JScrollPane(Table),BorderLayout.CENTER);
         revalidate();
     }
+
+    void showAvailableRecipes()
+    {
+        contentPane.removeAll();
+        Table = new JTable();
+        modelRecipe = new RecipeModel(DBWorker.availableRecipes());
+        Table.setModel(modelRecipe);
+        //  contentPane = this.getContentPane();
+        contentPane.add(new JScrollPane(Table),BorderLayout.CENTER);
+        revalidate();
+    }
+
 }
