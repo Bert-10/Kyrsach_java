@@ -6,6 +6,9 @@ import models.Products.Product;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.SynchronousQueue;
 
 public class DBWorker {
     public static String PATH_TO_DB_FILE="smartFridge.db";
@@ -32,7 +35,7 @@ public class DBWorker {
         addProduct(new Product("картофель","кг"));
 
         addRecipe(new Recipe("яичница","нет"));
-        addRecipe(new Recipe("Фарш с картошкой","нет"));
+        addRecipe(new Recipe("фарш с картошкой","нет"));
 
         addConnection(new Connect(1,3,4));
         addConnection(new Connect(2,1,1.3));
@@ -41,13 +44,17 @@ public class DBWorker {
         addProductToFridge(new Product(1,"фарш",1,"кг"));
         addProductToFridge(new Product(5,"картофель",4,"кг"));
         addProductToFridge(new Product(3,"яйцо",10,"шт"));
+        addProductToFridge(new Product(4,"сыр",2,"кг"));
    //        */;
         //getAllProducts();
 
-
+       // addProductToFridge(new Product(4,"сыр",2,"кг"));
+     //   deleteProductFromFridge(4);
       //  getAllConnection();
       //  System.out.println("");
-        availableRecipes ();
+       // availableRecipes ();
+     //   changeRecipe(new Recipe(2,"фарш с картошкой","да"));
+    //   getProductsToOneRecipe(2);
     }
 
     public static  void closeDB()
@@ -66,7 +73,7 @@ public class DBWorker {
           //  statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30), 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5));");
             statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' VARCHAR(30),'favorite' VARCHAR(5));");
             statement.execute("CREATE TABLE if not exists 'products' ('id' INTEGER PRIMARY KEY AUTOINCREMENT,'name' VARCHAR(30) UNIQUE, 'unit' VARCHAR(5));");
-            statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY,'name' VARCHAR(30) UNIQUE, 'amount' DOUBLE NOT NULL, 'unit' VARCHAR(5), FOREIGN KEY (id) REFERENCES products (id));");
+            statement.execute("CREATE TABLE if not exists 'fridge' ('id' INTEGER PRIMARY KEY, 'amount' DOUBLE NOT NULL, FOREIGN KEY (id) REFERENCES products (id));");
             statement.execute("CREATE TABLE if not exists 'connect' ('connect_id' INTEGER PRIMARY KEY AUTOINCREMENT,'recipe_id' INTEGER , 'product_id' INTEGER ,'amount' DOUBLE NOT NULL, FOREIGN KEY (recipe_id) REFERENCES recipes (id), FOREIGN KEY (product_id) REFERENCES products (id));");
           //  statmt.execute("CREATE TABLE if not exists 'students' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'lastname' text,'name' text,'email' text, 'group_id' INTEGER NOT NULL, FOREIGN KEY (group_id) REFERENCES groups (id));");
             System.out.println("Таблицы созданы");
@@ -95,13 +102,10 @@ public class DBWorker {
     {
         try {
           //  PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('name','amount','unit')"+"VALUES(?,?,?)");
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('id','name','amount','unit')"+"VALUES(?,?,?,?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO fridge('id','amount')"+"VALUES(?,?)");
 
             statement.setObject(1,product.getId());
-            statement.setObject(2,product.getName());
-            statement.setObject(3,product.getAmount());
-            statement.setObject(4,product.getUnit());
-
+            statement.setObject(2,product.getAmount());
 
             statement.execute();
             statement.close();
@@ -178,16 +182,40 @@ public class DBWorker {
         return list;
     }
 
+    public static ArrayList<Product> getProductsToOneRecipe(int id)
+    {
+        ArrayList<Product> list = new ArrayList<Product>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT products.name, connect.amount, products.unit FROM connect JOIN products ON products.id=connect.product_id WHERE connect.recipe_id="+id);
+          //  ResultSet resultSet = statement.executeQuery("SELECT students.id, students.lastname, students.name, students.group_id, groups.title FROM students JOIN groups ON groups.id = students.group_id");
+            while(resultSet.next())
+            {
+              //  System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3));
+                list.add(new Product(resultSet.getString(1),Double.parseDouble(resultSet.getString(2)),resultSet.getString(3)));
+            }
+            resultSet.close();
+            statement.close();
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public static ArrayList<Product> getAllFridge()
     {
         ArrayList<Product> list = new ArrayList<Product>();
         try {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM fridge");
+         //   ResultSet resultSet = statement.executeQuery("SELECT products.name, connect.amount, products.unit FROM connect JOIN products ON products.id=connect.product_id WHERE connect.recipe_id="+id);
+            ResultSet resultSet = statement.executeQuery("SELECT products.name, fridge.amount, products.unit FROM fridge JOIN products ON products.id=fridge.id");
             while(resultSet.next())
             {
              //   System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
-                list.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Double.parseDouble(resultSet.getString(3)),resultSet.getString(4)));
+              //  list.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Double.parseDouble(resultSet.getString(3)),resultSet.getString(4)));
+                list.add(new Product(resultSet.getString(1),Double.parseDouble(resultSet.getString(2)),resultSet.getString(3)));
             }
             resultSet.close();
             statement.close();
@@ -226,6 +254,7 @@ public class DBWorker {
     {
         ArrayList<Recipe> listRecipes = getAllRecipes();
         ArrayList<Recipe> itog=new ArrayList<Recipe>();
+      //  List<Recipe> itog=new List<Recipe>();
         ArrayList<Connect> listConnect = new ArrayList<Connect>();
         ArrayList<Product> listProducts = new ArrayList<Product>();
         for(int i=0;i<listRecipes.size();i++)
@@ -253,7 +282,8 @@ public class DBWorker {
                     while(resultSet.next())
                     {
                      //   System.out.println(resultSet.getString(1)+" "+resultSet.getString(2)+" "+resultSet.getString(3)+" "+resultSet.getString(4));
-                        listProducts.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Double.parseDouble(resultSet.getString(3)),resultSet.getString(4)));
+                      //  listProducts.add(new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),Double.parseDouble(resultSet.getString(3)),resultSet.getString(4)));
+                        listProducts.add(new Product(Integer.parseInt(resultSet.getString(1)),Double.parseDouble(resultSet.getString(2))));
                     }
                     resultSet.close();
                     statement.close();
@@ -269,9 +299,70 @@ public class DBWorker {
             listConnect.clear();
             listProducts.clear();
         }
+        //сортировка элементов
+        Collections.sort(
+                itog,
+                new Comparator<Recipe>() {
+                    public int compare(final Recipe e1, final Recipe e2) {
 
+                        return e1.getFavorite().compareTo(e2.getFavorite());
+                    }
+                }
+        );
 
         return itog;
     }
+
+    public static void deleteProductFromFridge(int id)  {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("DELETE FROM fridge WHERE fridge.id ="+id);
+           // System.out.println("deleted!");
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void changeRecipe(Recipe recipe)  {
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE recipes SET name ='"+recipe.getName()+"', favorite ='"+recipe.getFavorite()+"' WHERE id ="+recipe.getId());
+         //   statement.execute("UPDATE recipes SET favorite ='"+recipe.getFavorite()+"' WHERE id ="+recipe.getId());
+           // "update students set ID='"+ id.getText() +"' , username='"+ username.getText() + "', password='"+ pass.getText() +"', firstname='"+ fname.getText() +"', lastname='"+ lname.getText() +"' WHERE ID='"+ id.getText() +"'  ";
+           // statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' VARCHAR(30),'favorite' VARCHAR(5));");
+          //  statement.execute("CREATE TABLE if not exists 'recipes' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'name' VARCHAR(30),'favorite' VARCHAR(5));");
+            // System.out.println("deleted!");
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+/*
+    public static void test()
+    {
+        ArrayList<Recipe> itog=new ArrayList<Recipe>();
+        itog.add(new Recipe("яичница","нет"));
+        itog.add(new Recipe("фарш с картошкой","нет"));
+        itog.add(new Recipe("борщ","да"));
+
+        Collections.sort(
+                itog,
+                new Comparator<Recipe>() {
+                    public int compare(final Recipe e1, final Recipe e2) {
+
+                        return e1.getFavorite().compareTo(e2.getFavorite());
+                    }
+                }
+        );
+
+        for(int i=0;i<itog.size();i++ )
+        {
+            System.out.println(itog.get(i).getName()+" "+itog.get(i).getFavorite());
+        }
+
+    }
+*/
 
 }

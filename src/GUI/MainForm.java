@@ -17,7 +17,9 @@ public class MainForm extends JFrame {
     private FridgeModel modelFridge;
     private RecipeModel modelRecipe;
     private ProductModel modelProduct;
-    private Container contentPane=this.getContentPane();;
+    private Container contentPane=this.getContentPane();
+    private JButton openProductsToRecipe=new JButton("Показать продукты необходимые для рецепта");
+    private JButton closeProductsToRecipe=new JButton("Возврат к рецептам ");
   //  private JLabel fake=new JLabel("");
 
 
@@ -28,9 +30,33 @@ public class MainForm extends JFrame {
         setSize(500, 400);
         createFileMenu();
         init();
-
+        openProductsToRecipe.addActionListener(e->openProductsToRecipePress());
+        closeProductsToRecipe.addActionListener(e->showRecipes());
       //  contentPane.add(fake);
         setVisible(true);
+    }
+
+    void openProductsToRecipePress()
+    {
+
+        if(Table.getSelectedRow()==-1)
+        {
+            JOptionPane.showMessageDialog(null, "Строка для показа содержимого рецепта не выделена", "Ошибка показа рецепта", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+        //    System.out.println(Table.getSelectedRow()+1);
+         //   FridgeModel model;
+            contentPane.removeAll();
+            modelFridge= new FridgeModel(DBWorker.getProductsToOneRecipe(Table.getSelectedRow()+1));
+            Table = new JTable();
+            Table.setModel(modelFridge);
+            //  contentPane = this.getContentPane();
+            contentPane.add(new JScrollPane(Table),BorderLayout.CENTER);
+            contentPane.add(closeProductsToRecipe,BorderLayout.SOUTH);
+            revalidate();
+        }
+
     }
 
     private void init() {
@@ -58,7 +84,7 @@ public class MainForm extends JFrame {
         JMenu file = new JMenu("Меню");
         JMenuItem showFridge = new JMenuItem("Показать содержимое холодильника");
         JMenuItem showProducts = new JMenuItem("Показать продукты");
-        JMenuItem showRecipes = new JMenuItem("Показать рецпеты");
+        JMenuItem showRecipes = new JMenuItem("Показать рецепты");
         JMenuItem showAvailableRecipes = new JMenuItem("Показ возможных рецептов");
         file.add(showFridge);
         file.addSeparator();
@@ -108,6 +134,7 @@ public class MainForm extends JFrame {
         Table.setModel(modelRecipe);
       //  contentPane = this.getContentPane();
         contentPane.add(new JScrollPane(Table),BorderLayout.CENTER);
+        contentPane.add(openProductsToRecipe,BorderLayout.SOUTH);
         revalidate();
     }
 
