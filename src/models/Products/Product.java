@@ -11,6 +11,11 @@ public class Product {
         this.amount=amount;
         this.unit=unit;
     }
+    public Product (int id,String name, String unit){
+        this.id=id;
+        this.name=name;
+        this.unit=unit;
+    }
     public Product (String name, String unit){
         this.name=name;
         this.unit=unit;
