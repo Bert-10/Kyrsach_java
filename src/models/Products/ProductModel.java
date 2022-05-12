@@ -50,7 +50,7 @@ public class ProductModel extends AbstractTableModel {
         return data.get(selectedRow);
     }
 
-    public int findIdOfProductByName(String name)
+    public Product findIdOfProductByName(String name)
     {
         return DBWorker.findIdOfProductByName(name);
     }

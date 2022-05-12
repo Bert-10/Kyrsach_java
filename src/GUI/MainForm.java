@@ -32,6 +32,7 @@ public class MainForm extends JFrame {
     private JButton add=new JButton("Добавить");
     private JButton del=new JButton("Удалить");
     private JButton change=new JButton("Изменить");
+    private JButton showUnavailableRecipes= new JButton("Показать недостоующие компоненты для рецепта");
     private Container containerOfButtons=new Container();
     private Container containerOfAdds=new Container();
     private Container containerOfChange=new Container();
@@ -76,7 +77,7 @@ public class MainForm extends JFrame {
         changeElement.addActionListener(e->changeElement());
         addElement.addActionListener(e->addElement());
         setVisible(true);
-
+        showUnavailableRecipes.addActionListener(e->getMissingProductsToRecipe());
         containerOfButtons.setLayout(new FlowLayout());
         containerOfButtons.removeAll();
         containerOfButtons.add(add);
@@ -87,6 +88,24 @@ public class MainForm extends JFrame {
         setSize(550,200);
     }
 
+    void getMissingProductsToRecipe()
+    {
+        if(Table.getSelectedRow()==-1)
+        {
+            JOptionPane.showMessageDialog(null, "Строка для показа нехватающих продуктов для рецепта не выделена", "Ошибка показа нехватающих продуктов", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            contentPane.removeAll();
+
+            modelFridge= new FridgeModel(modelFridge.getMissingProductsToRecipe(Integer.parseInt(modelRecipe.getRecipe(Table.getSelectedRow()).getId())));
+            Table = new JTable();
+            Table.setModel(modelFridge);
+            contentPane.add(new JScrollPane(Table),BorderLayout.CENTER);
+            contentPane.revalidate();
+        }
+    }
+
     void addElement()
     {
         switch (switcher)
@@ -94,7 +113,7 @@ public class MainForm extends JFrame {
             case 1:
                 if(CheckNumber(PoleVvoda.getText()))
                 {
-                    modelFridge.addProductToFridge(new Product(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()),Double.parseDouble(PoleVvoda.getText())));
+                    modelFridge.addProductToFridge(new Product(Integer.parseInt(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getId()),Double.parseDouble(PoleVvoda.getText())));
                     PoleVvoda.setText("");
                     showFridge();
                 }
@@ -128,7 +147,7 @@ public class MainForm extends JFrame {
             case 4:
                 if(CheckNumber(PoleVvoda.getText()))
                 {
-                    modelFridge.addConnect(new Connect(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()),modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()),Double.parseDouble(PoleVvoda.getText())));
+                    modelFridge.addConnect(new Connect(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()),Integer.parseInt(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getId()),Double.parseDouble(PoleVvoda.getText())));
                     PoleVvoda.setText("");
                     openProductsToRecipePress();
                 }
@@ -138,18 +157,17 @@ public class MainForm extends JFrame {
 
     void comboBoxPress()
     {
+        /*
        for(int i=0;i<listOfProducts.size();i++)
        {
            if(Objects.equals((String) comboBox.getSelectedItem(), listOfProducts.get(i).getName()))
            {
                label4.setText(listOfProducts.get(i).getUnit());
-
                break;
            }
        }
-   //    label4.setText();
-
-
+        */
+        label4.setText(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getUnit());
     }
 
     void openProductsToRecipePress()
@@ -177,7 +195,7 @@ public class MainForm extends JFrame {
             containerOfButtons.remove(openProductsToRecipe);
             contentPane.add(containerOfButtons,BorderLayout.SOUTH);
        //     contentPane.add(closeProductsToRecipe,BorderLayout.SOUTH);
-            revalidate();
+            contentPane.revalidate();
         }
 
     }
@@ -205,23 +223,12 @@ public class MainForm extends JFrame {
     {
         JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("Меню");
-        /*
-        JMenu pomenu = new JMenu("Изменение данных таблиц");
-        JMenuItem add = new JMenuItem("Добавить элемент");
-        JMenuItem del = new JMenuItem("Удалить элемент");
-        JMenuItem change = new JMenuItem("Изменить элемент");
-        pomenu.add(add);
-        pomenu.addSeparator();
-        pomenu.add(del);
-        pomenu.addSeparator();
-        pomenu.add(change);
-        add.addActionListener(e->add());
-        */
 
         JMenuItem showFridge = new JMenuItem("Показать содержимое холодильника");
         JMenuItem showProducts = new JMenuItem("Показать продукты");
         JMenuItem showRecipes = new JMenuItem("Показать рецепты");
         JMenuItem showAvailableRecipes = new JMenuItem("Показ возможных рецептов");
+        JMenuItem showUnavailableRecipes = new JMenuItem("Показ невозможных рецептов");
        // file.add(pomenu);
        // file.addSeparator();
         file.add(showFridge);
@@ -231,11 +238,14 @@ public class MainForm extends JFrame {
         file.add(showRecipes);
         file.addSeparator();
         file.add(showAvailableRecipes);
+        file.addSeparator();
+        file.add(showUnavailableRecipes);
 
         showFridge.addActionListener(e-> showFridge());
         showProducts.addActionListener(e-> showProducts());
         showRecipes.addActionListener(e->showRecipes());
         showAvailableRecipes.addActionListener(e->showAvailableRecipes());
+        showUnavailableRecipes.addActionListener(e->showUnavailableRecipes());
         menuBar.add(file);
         setJMenuBar(menuBar);
     }
@@ -341,7 +351,12 @@ public class MainForm extends JFrame {
                     containerOfAdds.add(changeElement);
 
                     contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                    revalidate();
+
+                    containerOfAdds.revalidate();
+                    contentPane.revalidate();
+
+                    contentPane.setVisible(false);
+                    contentPane.setVisible(true);
                 }
                 break;
             case 2:
@@ -373,7 +388,11 @@ public class MainForm extends JFrame {
                     containerOfAdds.add(changeElement);
 
                     contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                    revalidate();
+                    containerOfAdds.revalidate();
+                    contentPane.revalidate();
+
+                    contentPane.setVisible(false);
+                    contentPane.setVisible(true);
                 }
                 break;
             case 3:
@@ -405,7 +424,11 @@ public class MainForm extends JFrame {
                     containerOfAdds.add(changeElement);
 
                     contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                    revalidate();
+                    containerOfAdds.revalidate();
+                    contentPane.revalidate();
+
+                    contentPane.setVisible(false);
+                    contentPane.setVisible(true);
                 }
                 break;
             case 4:
@@ -441,7 +464,11 @@ public class MainForm extends JFrame {
 
                     containerOfAdds.add(changeElement);
                     contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                    revalidate();
+                    containerOfAdds.revalidate();
+                    contentPane.revalidate();
+
+                    contentPane.setVisible(false);
+                    contentPane.setVisible(true);
                 }
                 break;
         }
@@ -540,16 +567,20 @@ public class MainForm extends JFrame {
                     containerOfAdds.add(label3);
                     containerOfAdds.add(label4);
                     containerOfAdds.add(addElement);
-                    if(checkAdd==false)
-                    {
+                //    if(checkAdd==false)
+                //    {
                         comboBox.addActionListener (e->comboBoxPress());
-                        checkAdd=true;
-                    }
+                 //       checkAdd=true;
+                   // }
 
                     //   containerOfAdds.revalidate();
 
                     contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                    revalidate();
+                    containerOfAdds.revalidate();
+                    contentPane.revalidate();
+
+                    contentPane.setVisible(false);
+                    contentPane.setVisible(true);
                 }
                 break;
             case 2:
@@ -569,7 +600,11 @@ public class MainForm extends JFrame {
 
                 containerOfAdds.add(addElement);
                 contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                revalidate();
+                containerOfAdds.revalidate();
+                contentPane.revalidate();
+
+                contentPane.setVisible(false);
+                contentPane.setVisible(true);
                 break;
             case 3:
                 comboBoxStatic=new JComboBox(favorites);
@@ -588,7 +623,11 @@ public class MainForm extends JFrame {
 
                 containerOfAdds.add(addElement);
                 contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                revalidate();
+                containerOfAdds.revalidate();
+                contentPane.revalidate();
+
+                contentPane.setVisible(false);
+                contentPane.setVisible(true);
                 break;
             case 4:
                  str="";
@@ -609,11 +648,11 @@ public class MainForm extends JFrame {
                     massStr = str.split(",");
                     comboBox = new JComboBox(massStr);
 
-                    if(checkAdd==false)
-                    {
-                        comboBox.addActionListener (e->comboBoxPress());
-                        checkAdd=true;
-                    }
+               //     if(checkAdd==false)
+              //      {
+                    comboBox.addActionListener (e->comboBoxPress());
+                   // checkAdd=true;
+                 //   }
 
                     contentPane.removeAll();
 
@@ -640,7 +679,11 @@ public class MainForm extends JFrame {
 
                     containerOfAdds.add(addElement);
                     contentPane.add(containerOfAdds,BorderLayout.CENTER);
-                    revalidate();
+                    containerOfAdds.revalidate();
+                    contentPane.revalidate();
+
+                    contentPane.setVisible(false);
+                    contentPane.setVisible(true);
                 }
 
                 break;
@@ -653,7 +696,9 @@ public class MainForm extends JFrame {
         switcher=1;
         contentPane.removeAll();
         Table = new JTable();
+
         listOfProducts=DBWorker.getAllFridge();
+
         modelFridge= new FridgeModel(listOfProducts);
 
         Table.setModel(modelFridge);
@@ -671,6 +716,11 @@ public class MainForm extends JFrame {
         contentPane.add(containerOfButtons,BorderLayout.SOUTH);
 
         revalidate();
+        contentPane.revalidate();
+        containerOfButtons.revalidate();
+
+        contentPane.setVisible(false);
+        contentPane.setVisible(true);
     }
 
     void showProducts()
@@ -684,7 +734,10 @@ public class MainForm extends JFrame {
         contentPane.add(new JScrollPane(Table),BorderLayout.CENTER);
         containerOfButtons.remove(openProductsToRecipe);
         contentPane.add(containerOfButtons,BorderLayout.SOUTH);
-        revalidate();
+        contentPane.revalidate();
+
+        contentPane.setVisible(false);
+        contentPane.setVisible(true);
     }
 
     void showRecipes()
@@ -701,7 +754,32 @@ public class MainForm extends JFrame {
         containerOfButtons.add(openProductsToRecipe);
         contentPane.add(containerOfButtons,BorderLayout.SOUTH);
      //   contentPane.add(openProductsToRecipe,BorderLayout.SOUTH);
-        revalidate();
+        contentPane.revalidate();
+
+        contentPane.setVisible(false);
+        contentPane.setVisible(true);
+    }
+
+    void showUnavailableRecipes()
+    {
+        contentPane.removeAll();
+        Table = new JTable();
+        /*
+        modelRecipe = new RecipeModel(DBWorker.availableRecipes());
+        Table.setModel(modelRecipe);
+         */
+
+        modelRecipe = new RecipeModel(DBWorker.getUnavailableRecipes());
+        Table.setModel(modelRecipe);
+
+        JScrollPane pane=new JScrollPane(Table);
+        contentPane.add(pane,BorderLayout.CENTER);
+        contentPane.add(showUnavailableRecipes,BorderLayout.SOUTH);
+        contentPane.revalidate();
+
+        contentPane.setVisible(false);
+        contentPane.setVisible(true);
+
     }
 
     void showAvailableRecipes()
@@ -718,9 +796,10 @@ public class MainForm extends JFrame {
         contentPane.add(pane,BorderLayout.CENTER);
         //contentPane.setSelectionBackground(Color.red);
        //contentPane.setRowHeaderView("gf");
-        revalidate();
+        contentPane.revalidate();
 
-
+        contentPane.setVisible(false);
+        contentPane.setVisible(true);
     }
 
 }

@@ -66,10 +66,11 @@ public class FridgeModel extends AbstractTableModel {
         DBWorker.changeProductInFridge(product);
     }
 
-    public int findIdOfProductByName(String name)
+    public Product findIdOfProductByName(String name)
     {
         return DBWorker.findIdOfProductByName(name);
     }
+
     public void deleteConnect(int recipe_id,int product_id,int switcher){DBWorker.deleteConnect(DBWorker.findIdConnect(recipe_id, product_id),switcher);}
 
     public ArrayList<Product> getsAvailableProductsToOneRecipe(int id){return DBWorker.getsAvailableProductsToOneRecipe(id);}
@@ -78,4 +79,5 @@ public class FridgeModel extends AbstractTableModel {
         DBWorker.addConnect(connect);}
 
     public void changeConnect(int recipe_id,int product_id, double amount){DBWorker.changeConnect(new Connect(DBWorker.findIdConnect(recipe_id, product_id),recipe_id,product_id,amount));}
+    public ArrayList<Product> getMissingProductsToRecipe(int id){return DBWorker.getMissingProductsToRecipe(id);}
 }

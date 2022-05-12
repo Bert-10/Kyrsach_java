@@ -62,4 +62,5 @@ public class RecipeModel extends AbstractTableModel  {
     }
 
      public ArrayList<Product> getProductsToOneRecipe(int id){return DBWorker.getProductsToOneRecipe(id);}
+   public ArrayList<Recipe> getUnavailableRecipes(){return DBWorker.getUnavailableRecipes();}
 }

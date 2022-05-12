@@ -320,6 +320,31 @@ public class DBWorker {
         return list;
     }
 
+    public static ArrayList<Recipe> getUnavailableRecipes ()
+    {
+        ArrayList<Recipe> listAvailableRecipes = availableRecipes();
+        ArrayList<Recipe> listAllRecipes = getAllRecipes();
+        ArrayList<Recipe> itog=new ArrayList<Recipe>();
+        boolean check=false;
+        for(int i=0;i<listAllRecipes.size();i++)
+        {
+            check=false;
+            for(int j=0;j<listAvailableRecipes.size();j++)
+            {
+                if(Objects.equals(listAllRecipes.get(i).getId(), listAvailableRecipes.get(j).getId()))
+                {
+                    check=true;
+                    break;
+                }
+            }
+            if(check==false)
+            {
+                itog.add(listAllRecipes.get(i));
+            }
+        }
+        return itog;
+    }
+
     public static ArrayList<Recipe> availableRecipes ()
     {
         ArrayList<Recipe> listRecipes = getAllRecipes();
@@ -590,15 +615,17 @@ public class DBWorker {
         return  check;
     }
 
-    public static int findIdOfProductByName(String name)
+    public static Product findIdOfProductByName(String name)
     {
-        int id=-1;
+       // int id=-1;
+        Product product=new Product(-1,"","");
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT * FROM products WHERE products.name='"+name+"'");
             while(resultSet.next())
             {
-                id=Integer.parseInt(resultSet.getString(1));
+              //  id=Integer.parseInt(resultSet.getString(1));
+                product=new Product(Integer.parseInt(resultSet.getString(1)),resultSet.getString(2),resultSet.getString(3));
             }
 
             resultSet.close();
@@ -608,7 +635,7 @@ public class DBWorker {
 
             e.printStackTrace();
         }
-        return id;
+        return product;
     }
 
     public static boolean checkProductName(String name)
