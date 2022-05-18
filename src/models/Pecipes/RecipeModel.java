@@ -61,6 +61,8 @@ public class RecipeModel extends AbstractTableModel  {
        return DBWorker.changeRecipe(recipe, switcher);
     }
 
-     public ArrayList<Product> getProductsToOneRecipe(int id){return DBWorker.getProductsToOneRecipe(id);}
-   public ArrayList<Recipe> getUnavailableRecipes(){return DBWorker.getUnavailableRecipes();}
+    public ArrayList<Product> getProductsToOneRecipe(int id){return DBWorker.getProductsToOneRecipe(id);}
+    public ArrayList<Recipe> getUnavailableRecipes(){return DBWorker.getUnavailableRecipes();}
+
+    public void realiseRecipe(int id){DBWorker.realiseRecipe(id);}
 }

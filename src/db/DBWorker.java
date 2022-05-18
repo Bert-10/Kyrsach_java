@@ -78,6 +78,7 @@ public class DBWorker {
       //  System.out.println(findIdOfProductByName("молоко"));
         //System.out.println(checkProductName("кака"));
        // getsAvailableProductsToOneRecipe(2);
+
     }
 
     public static  void closeDB()
@@ -217,7 +218,7 @@ public class DBWorker {
         return list;
     }
 
-    public static ArrayList<Product> getsAvailableProductsToOneRecipe(int id)
+    public static ArrayList<Product> getsAvailableProductsToOneRecipe(int id)  // возвращет проудкты, которых нет в рецепте
     {
         ArrayList<Product> list = getProductsToOneRecipe(id);
         ArrayList<Product> listProducts = getAllProducts();
@@ -742,7 +743,33 @@ public class DBWorker {
         }
     }
 
+    public static void realiseRecipe(int id)
+    {
+        ArrayList<Product> listProducts=getProductsToOneRecipe(id);
+        ArrayList<Product> listFridge=getAllFridge();
+        for(int i=0;i<listProducts.size();i++)
+        {
+            for(int j=0;j<listFridge.size();j++)
+            {
+                if(Objects.equals(listProducts.get(i).getId(), listFridge.get(j).getId()))
+                {
+                    if(Double.parseDouble(listProducts.get(i).getAmount())==Double.parseDouble(listFridge.get(j).getAmount()))
+                    {
+                        //delete product from fridge
+                        deleteProductFromFridge(Integer.parseInt(listProducts.get(i).getId()));
+                    }
+                    else
+                    {
+                        //change product in fridge
+                        changeProductInFridge(new Product(Integer.parseInt(listProducts.get(i).getId()),Double.parseDouble(listFridge.get(j).getAmount())-Double.parseDouble(listProducts.get(i).getAmount())));
+                    }
+                    break;
+                }
 
+            }
+        }
+
+    }
 
 
 

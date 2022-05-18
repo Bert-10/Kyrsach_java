@@ -31,7 +31,8 @@ public class FridgeModel extends AbstractTableModel {
         Product pr = data.get(rowIndex);
         switch (columnIndex){
             case 0: return pr.getName();
-            case 1: return pr.getAmount();
+           // case 1: return pr.getAmount();
+            case 1: return checkIntOrDouble(pr.getAmount());
             case 2: return pr.getUnit();
         }
         return "";
@@ -45,6 +46,18 @@ public class FridgeModel extends AbstractTableModel {
             case 2: return "Единицы измерения";
         }
         return "";
+    }
+
+    public String checkIntOrDouble(String amount)
+    {
+        String str=amount;
+        double d=Double.parseDouble(amount);
+        int i=(int)d;
+        if(d%i==0)
+        {
+            str=Integer.toString(i);
+        }
+        return str;
     }
 
     public Product getProduct(int selectedRow) {

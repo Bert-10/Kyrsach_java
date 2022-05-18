@@ -53,8 +53,9 @@ public class MainForm extends JFrame {
     private String[] favorites={"да","нет"};
     private JButton addElement=new JButton("Добавить элемент");
     private JButton changeElement=new JButton("Изменить элемент");
+    private JButton realisationOfRecipe=new JButton("Реализовать рецепт");
     private boolean checkAdd=false;
-    private int switcher=1,selectedRow=-1,selectedRowOfRecipes=-1;
+    private int switcher=1,selectedRow=-1,selectedRowOfRecipes=-1,backRecipeCheck;
   //  private JLabel fake=new JLabel("");
 
 
@@ -76,6 +77,7 @@ public class MainForm extends JFrame {
 
         changeElement.addActionListener(e->changeElement());
         addElement.addActionListener(e->addElement());
+        realisationOfRecipe.addActionListener(e->realiseRecipe());
         setVisible(true);
         showUnavailableRecipes.addActionListener(e->getMissingProductsToRecipe());
         containerOfButtons.setLayout(new FlowLayout());
@@ -181,6 +183,7 @@ public class MainForm extends JFrame {
         else
         {
             switcher=4;
+            backRecipeCheck=1;
           //  selectedRow=Table.getSelectedRow();
 
             contentPane.removeAll();
@@ -196,6 +199,9 @@ public class MainForm extends JFrame {
             contentPane.add(containerOfButtons,BorderLayout.SOUTH);
        //     contentPane.add(closeProductsToRecipe,BorderLayout.SOUTH);
             contentPane.revalidate();
+            containerOfButtons.revalidate();
+            contentPane.setVisible(false);
+            contentPane.setVisible(true);
         }
 
     }
@@ -229,6 +235,7 @@ public class MainForm extends JFrame {
         JMenuItem showRecipes = new JMenuItem("Показать рецепты");
         JMenuItem showAvailableRecipes = new JMenuItem("Показ возможных рецептов");
         JMenuItem showUnavailableRecipes = new JMenuItem("Показ невозможных рецептов");
+        JMenuItem back = new JMenuItem("Назад");
        // file.add(pomenu);
        // file.addSeparator();
         file.add(showFridge);
@@ -246,8 +253,36 @@ public class MainForm extends JFrame {
         showRecipes.addActionListener(e->showRecipes());
         showAvailableRecipes.addActionListener(e->showAvailableRecipes());
         showUnavailableRecipes.addActionListener(e->showUnavailableRecipes());
+        back.addActionListener(e->back());
         menuBar.add(file);
+        menuBar.add(back);
         setJMenuBar(menuBar);
+    }
+
+    void back()
+    {
+        switch(-switcher)
+        {
+            case -1:
+                showFridge();
+                break;
+            case -2:
+                showProducts();
+                break;
+            case -3:
+                showRecipes();
+                break;
+            case -4:
+                if(backRecipeCheck==1)
+                {
+                    showRecipes();
+                }
+                else
+                {
+                    openProductsToRecipePress();
+                }
+                break;
+        }
     }
 
     void changeElement()
@@ -438,6 +473,7 @@ public class MainForm extends JFrame {
                 }
                 else
                 {
+                    backRecipeCheck=0;
                     //listOfProducts=modelFridge.getsAvailableProductsToOneRecipe(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()));
                     contentPane.removeAll();
 
@@ -644,6 +680,7 @@ public class MainForm extends JFrame {
                     for (int i = 0; i < listOfProducts.size(); i++) {
                         str = str + listOfProducts.get(i).getName() + ",";
                     }
+                    backRecipeCheck=0;
                     str = str.substring(0, str.length() - 1);
                     massStr = str.split(",");
                     comboBox = new JComboBox(massStr);
@@ -796,10 +833,26 @@ public class MainForm extends JFrame {
         contentPane.add(pane,BorderLayout.CENTER);
         //contentPane.setSelectionBackground(Color.red);
        //contentPane.setRowHeaderView("gf");
+        contentPane.add(realisationOfRecipe,BorderLayout.SOUTH);
+
         contentPane.revalidate();
 
         contentPane.setVisible(false);
         contentPane.setVisible(true);
+    }
+
+    void realiseRecipe()
+    {
+        if(Table.getSelectedRow()==-1)
+        {
+            JOptionPane.showMessageDialog(null, "Не выбран рецепт для реализации", "Ошибка реализации", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            modelRecipe.realiseRecipe(Integer.parseInt(modelRecipe.getRecipe(Table.getSelectedRow()).getId()));
+            showAvailableRecipes();
+            JOptionPane.showMessageDialog(null, "Рецепт был успешно реализован", "Рецепт реализован", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
 }
