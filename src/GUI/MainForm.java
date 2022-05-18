@@ -56,6 +56,8 @@ public class MainForm extends JFrame {
     private JButton realisationOfRecipe=new JButton("Реализовать рецепт");
     private boolean checkAdd=false;
     private int switcher=1,selectedRow=-1,selectedRowOfRecipes=-1,backRecipeCheck;
+    private JMenuBar menuBar = new JMenuBar();
+    private JMenuItem back = new JMenuItem("Назад");
   //  private JLabel fake=new JLabel("");
 
 
@@ -98,6 +100,9 @@ public class MainForm extends JFrame {
         }
         else
         {
+            menuBar.add(back);
+            setJMenuBar(menuBar);
+
             contentPane.removeAll();
 
             modelFridge= new FridgeModel(modelFridge.getMissingProductsToRecipe(Integer.parseInt(modelRecipe.getRecipe(Table.getSelectedRow()).getId())));
@@ -182,6 +187,9 @@ public class MainForm extends JFrame {
         }
         else
         {
+            menuBar.add(back);
+            setJMenuBar(menuBar);
+
             switcher=4;
             backRecipeCheck=1;
           //  selectedRow=Table.getSelectedRow();
@@ -227,15 +235,13 @@ public class MainForm extends JFrame {
 
     void createFileMenu()
     {
-        JMenuBar menuBar = new JMenuBar();
         JMenu file = new JMenu("Меню");
-
         JMenuItem showFridge = new JMenuItem("Показать содержимое холодильника");
         JMenuItem showProducts = new JMenuItem("Показать продукты");
         JMenuItem showRecipes = new JMenuItem("Показать рецепты");
         JMenuItem showAvailableRecipes = new JMenuItem("Показ возможных рецептов");
         JMenuItem showUnavailableRecipes = new JMenuItem("Показ невозможных рецептов");
-        JMenuItem back = new JMenuItem("Назад");
+
        // file.add(pomenu);
        // file.addSeparator();
         file.add(showFridge);
@@ -256,6 +262,7 @@ public class MainForm extends JFrame {
         back.addActionListener(e->back());
         menuBar.add(file);
         menuBar.add(back);
+     //   menuBar.remove(back);
         setJMenuBar(menuBar);
     }
 
@@ -280,7 +287,12 @@ public class MainForm extends JFrame {
                 else
                 {
                     openProductsToRecipePress();
+                   // getMissingProductsToRecipe();
                 }
+                break;
+            case -5:
+                //getMissingProductsToRecipe();
+                showUnavailableRecipes();
                 break;
         }
     }
@@ -355,6 +367,7 @@ public class MainForm extends JFrame {
 
     void change()
     {
+
         switch (switcher)
         {
             case 1:
@@ -366,6 +379,8 @@ public class MainForm extends JFrame {
                 {
                     // modelFridge.changeProductInFridge(new Product(modelFridge.getProduct((Table.getSelectedRow()),));
                     // showFridge();
+                    menuBar.add(back);
+                    setJMenuBar(menuBar);
                     selectedRow=Table.getSelectedRow();
 
                     label1.setText("Вы изменяете продукт:");
@@ -401,6 +416,8 @@ public class MainForm extends JFrame {
                 }
                 else
                 {
+                    menuBar.add(back);
+                    setJMenuBar(menuBar);
                     selectedRow=Table.getSelectedRow();
 
                     comboBoxStatic=new JComboBox(units);
@@ -437,6 +454,8 @@ public class MainForm extends JFrame {
                 }
                 else
                 {
+                    menuBar.add(back);
+                    setJMenuBar(menuBar);
                     selectedRow=Table.getSelectedRow();
 
                     comboBoxStatic=new JComboBox(favorites);
@@ -473,6 +492,8 @@ public class MainForm extends JFrame {
                 }
                 else
                 {
+                    menuBar.add(back);
+                    setJMenuBar(menuBar);
                     backRecipeCheck=0;
                     //listOfProducts=modelFridge.getsAvailableProductsToOneRecipe(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()));
                     contentPane.removeAll();
@@ -566,6 +587,7 @@ public class MainForm extends JFrame {
 
     void add()
     {
+
         switch (switcher)
         {
             case 1:
@@ -579,6 +601,8 @@ public class MainForm extends JFrame {
                 }
                 else
                 {
+                    menuBar.add(back);
+                    setJMenuBar(menuBar);
                     for(int i=0;i< listOfProducts.size();i++)
                     {
                         str=str+listOfProducts.get(i).getName()+",";
@@ -620,6 +644,8 @@ public class MainForm extends JFrame {
                 }
                 break;
             case 2:
+                menuBar.add(back);
+                setJMenuBar(menuBar);
                 comboBoxStatic=new JComboBox(units);
                 contentPane.removeAll();
 
@@ -643,6 +669,8 @@ public class MainForm extends JFrame {
                 contentPane.setVisible(true);
                 break;
             case 3:
+                menuBar.add(back);
+                setJMenuBar(menuBar);
                 comboBoxStatic=new JComboBox(favorites);
                 contentPane.removeAll();
 
@@ -681,6 +709,8 @@ public class MainForm extends JFrame {
                         str = str + listOfProducts.get(i).getName() + ",";
                     }
                     backRecipeCheck=0;
+                    menuBar.add(back);
+                    setJMenuBar(menuBar);
                     str = str.substring(0, str.length() - 1);
                     massStr = str.split(",");
                     comboBox = new JComboBox(massStr);
@@ -730,6 +760,8 @@ public class MainForm extends JFrame {
 
     void showFridge()
     {
+        menuBar.remove(back);
+        setJMenuBar(menuBar);
         switcher=1;
         contentPane.removeAll();
         Table = new JTable();
@@ -762,6 +794,8 @@ public class MainForm extends JFrame {
 
     void showProducts()
     {
+        menuBar.remove(back);
+        setJMenuBar(menuBar);
         switcher=2;
         contentPane.removeAll();
         Table = new JTable();
@@ -773,12 +807,15 @@ public class MainForm extends JFrame {
         contentPane.add(containerOfButtons,BorderLayout.SOUTH);
         contentPane.revalidate();
 
+        menuBar.revalidate();
         contentPane.setVisible(false);
         contentPane.setVisible(true);
     }
 
     void showRecipes()
     {
+        menuBar.remove(back);
+        setJMenuBar(menuBar);
         switcher=3;
         contentPane.removeAll();
         Table = new JTable();
@@ -799,6 +836,9 @@ public class MainForm extends JFrame {
 
     void showUnavailableRecipes()
     {
+        switcher=5;
+        menuBar.remove(back);
+        setJMenuBar(menuBar);
         contentPane.removeAll();
         Table = new JTable();
         /*
@@ -821,6 +861,9 @@ public class MainForm extends JFrame {
 
     void showAvailableRecipes()
     {
+
+        menuBar.remove(back);
+        setJMenuBar(menuBar);
         contentPane.removeAll();
         Table = new JTable();
         modelRecipe = new RecipeModel(DBWorker.availableRecipes());
