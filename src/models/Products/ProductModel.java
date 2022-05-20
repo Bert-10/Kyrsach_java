@@ -55,17 +55,17 @@ public class ProductModel extends AbstractTableModel {
         return DBWorker.findIdOfProductByName(name);
     }
 
-    public boolean addProduct(Product product)
+    public boolean addProduct(String name,String unit)
     {
-        return DBWorker.addProduct(product);
+        return DBWorker.addProduct(new Product(name,unit));
     }
     public void deleteProduct(int n)
     {
         DBWorker.deleteProduct(n);
         fireTableDataChanged();
     }
-    public boolean changeProduct(Product product,int switcher)
+    public boolean changeProduct(int id,String name,String unit,int switcher)
     {
-        return DBWorker.changeProduct(product,switcher);
+        return DBWorker.changeProduct(new Product(id,name,unit),switcher);
     }
 }

@@ -47,18 +47,18 @@ public class RecipeModel extends AbstractTableModel  {
         return data.get(selectedRow);
     }
 
-    public boolean addRecipe(Recipe recipe)
+    public boolean addRecipe(String name,String favorite)
     {
-        return DBWorker.addRecipe(recipe);
+        return DBWorker.addRecipe(new Recipe(name,favorite));
     }
     public void deleteRecipe(int n)
     {
         DBWorker.deleteRecipe(n);
         fireTableDataChanged();
     }
-    public boolean changeRecipe(Recipe recipe,int switcher)
+    public boolean changeRecipe(int id,String name,String favorite,int switcher)
     {
-       return DBWorker.changeRecipe(recipe, switcher);
+       return DBWorker.changeRecipe(new Recipe(id,name,favorite), switcher);
     }
 
     public ArrayList<Product> getProductsToOneRecipe(int id){return DBWorker.getProductsToOneRecipe(id);}

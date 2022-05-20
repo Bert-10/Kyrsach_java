@@ -14,6 +14,7 @@ public class DBWorker {
     public static String PATH_TO_DB_FILE="smartFridge.db";
     public static String URL="jdbc:sqlite:"+PATH_TO_DB_FILE;
     public static Connection connection;
+
     public static void initDB()
     {
         try {

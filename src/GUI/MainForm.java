@@ -1,11 +1,11 @@
 package GUI;
 
 import db.DBWorker;
-import models.Connects.Connect;
-import models.Pecipes.Recipe;
+//import models.Connects.Connect;
+//import models.Pecipes.Recipe;
 import models.Pecipes.RecipeModel;
 import models.Products.FridgeModel;
-import models.Products.Product;
+//import models.Products.Product;
 import models.Products.ProductModel;
 
 import javax.swing.*;
@@ -27,17 +27,16 @@ public class MainForm extends JFrame {
     private ProductModel modelProduct;
     private Container contentPane=this.getContentPane();
     private JButton openProductsToRecipe=new JButton("Показать продукты для рецепта");
-    private JButton closeProductsToRecipe=new JButton("Возврат к рецептам");
 
+   // private ArrayList<Recipe> listOfRecipes = new ArrayList<Recipe>();
     private JButton add=new JButton("Добавить");
     private JButton del=new JButton("Удалить");
     private JButton change=new JButton("Изменить");
-    private JButton showUnavailableRecipes= new JButton("Показать недостоующие компоненты для рецепта");
+    private JButton showUnavailableRecipes= new JButton("Показать недостающие компоненты для рецепта");
     private Container containerOfButtons=new Container();
     private Container containerOfAdds=new Container();
-    private Container containerOfChange=new Container();
-    private ArrayList<Product> listOfProducts = new ArrayList<Product>();
-    private ArrayList<Recipe> listOfRecipes = new ArrayList<Recipe>();
+  //  private Container containerOfChange=new Container();
+  //  private ArrayList<Product> listOfProducts = new ArrayList<Product>();
     private JComboBox comboBox;
     private JComboBox comboBoxStatic;
     private JLabel label1=new JLabel("Продукт");
@@ -48,13 +47,13 @@ public class MainForm extends JFrame {
     private JLabel label5=new JLabel("");
     private JLabel label6=new JLabel("");
     private JTextField PoleVvoda= new JTextField("");
-    private JTextField PoleVvoda2= new JTextField("");
+//    private JTextField PoleVvoda2= new JTextField("");
     private String[] units={"кг","л","шт"};
     private String[] favorites={"да","нет"};
     private JButton addElement=new JButton("Добавить элемент");
     private JButton changeElement=new JButton("Изменить элемент");
     private JButton realisationOfRecipe=new JButton("Реализовать рецепт");
-    private boolean checkAdd=false;
+
     private int switcher=1,selectedRow=-1,selectedRowOfRecipes=-1,backRecipeCheck;
     private JMenuBar menuBar = new JMenuBar();
     private JMenuItem back = new JMenuItem("Назад");
@@ -120,7 +119,7 @@ public class MainForm extends JFrame {
             case 1:
                 if(CheckNumber(PoleVvoda.getText()))
                 {
-                    modelFridge.addProductToFridge(new Product(Integer.parseInt(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getId()),Double.parseDouble(PoleVvoda.getText())));
+                    modelFridge.addProductToFridge(Integer.parseInt(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getId()),Double.parseDouble(PoleVvoda.getText()));
                     PoleVvoda.setText("");
                     showFridge();
                 }
@@ -128,7 +127,7 @@ public class MainForm extends JFrame {
             case 2:
                 if(CheckStroka(PoleVvoda.getText()))
                 {
-                    if(!modelProduct.addProduct(new Product(PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem())))
+                    if(!modelProduct.addProduct(PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem()))
                     {
                         JOptionPane.showMessageDialog(null, "Введённое имя нарушает уникальность в базе данных.\nВведите другое имя", "Ошибка изменения элемента", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -141,7 +140,7 @@ public class MainForm extends JFrame {
             case 3:
                 if(CheckStroka(PoleVvoda.getText()))
                 {
-                    if(!modelRecipe.addRecipe(new Recipe(PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem())))
+                    if(!modelRecipe.addRecipe(PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem()))
                     {
                         JOptionPane.showMessageDialog(null, "Введённое имя нарушает уникальность в базе данных.\nВведите другое имя", "Ошибка изменения элемента", JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -154,7 +153,7 @@ public class MainForm extends JFrame {
             case 4:
                 if(CheckNumber(PoleVvoda.getText()))
                 {
-                    modelFridge.addConnect(new Connect(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()),Integer.parseInt(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getId()),Double.parseDouble(PoleVvoda.getText())));
+                    modelFridge.addConnect(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()),Integer.parseInt(modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getId()),Double.parseDouble(PoleVvoda.getText()));
                     PoleVvoda.setText("");
                     openProductsToRecipePress();
                 }
@@ -304,7 +303,7 @@ public class MainForm extends JFrame {
             case 1:
                 if(CheckNumber(PoleVvoda.getText()))
                 {
-                    modelFridge.changeProductInFridge(new Product(Integer.parseInt(modelFridge.getProduct(selectedRow).getId()),Double.parseDouble(PoleVvoda.getText())));
+                    modelFridge.changeProductInFridge(Integer.parseInt(modelFridge.getProduct(selectedRow).getId()),Double.parseDouble(PoleVvoda.getText()));
                     PoleVvoda.setText("");
                     showFridge();
                 }
@@ -314,12 +313,12 @@ public class MainForm extends JFrame {
                 {
                     if(Objects.equals(PoleVvoda.getText(), labelFake.getText()))
                     {
-                        modelProduct.changeProduct(new Product(Integer.parseInt(modelProduct.getProduct(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem()),2);
+                        modelProduct.changeProduct(Integer.parseInt(modelProduct.getProduct(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem(),2);
                         showProducts();
                     }
                     else
                     {
-                        if(!modelProduct.changeProduct(new Product(Integer.parseInt(modelProduct.getProduct(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem()),1))
+                        if(!modelProduct.changeProduct(Integer.parseInt(modelProduct.getProduct(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem(),1))
                         {
                             JOptionPane.showMessageDialog(null, "Введённое имя нарушает уникальность в базе данных.\nВведите другое имя", "Ошибка изменения элемента", JOptionPane.INFORMATION_MESSAGE);
                         }
@@ -335,12 +334,12 @@ public class MainForm extends JFrame {
                 {
                     if(Objects.equals(PoleVvoda.getText(), labelFake.getText()))
                     {
-                        modelRecipe.changeRecipe(new Recipe(Integer.parseInt(modelRecipe.getRecipe(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem()),2);
+                        modelRecipe.changeRecipe(Integer.parseInt(modelRecipe.getRecipe(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem(),2);
                         showRecipes();
                     }
                     else
                     {
-                        if(!modelRecipe.changeRecipe(new Recipe(Integer.parseInt(modelRecipe.getRecipe(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem()),1))
+                        if(!modelRecipe.changeRecipe(Integer.parseInt(modelRecipe.getRecipe(selectedRow).getId()),PoleVvoda.getText(),(String)comboBoxStatic.getSelectedItem(),1))
                         {
                             JOptionPane.showMessageDialog(null, "Введённое имя нарушает уникальность в базе данных.\nВведите другое имя", "Ошибка изменения элемента", JOptionPane.INFORMATION_MESSAGE);
                         }
@@ -591,10 +590,11 @@ public class MainForm extends JFrame {
         switch (switcher)
         {
             case 1:
-                String str="";
+                String str=modelFridge.productsNotInTheFridge();
                 String [] massStr;
-                listOfProducts=DBWorker.productsNotInTheFridge();
-                if(listOfProducts.size()==0)
+                //listOfProducts=DBWorker.productsNotInTheFridge();
+
+                if(Objects.equals(str, ""))
                 {
                     JOptionPane.showMessageDialog(null, "Нет продуктов, которых бы не было в холодильнике. Добавьте желаемый продукт в таблицу 'продукты', а затем повторите операцию", "Ошибка добавления", JOptionPane.INFORMATION_MESSAGE);
                     // PoleVvoda.setText("");
@@ -603,14 +603,17 @@ public class MainForm extends JFrame {
                 {
                     menuBar.add(back);
                     setJMenuBar(menuBar);
+                    /*
                     for(int i=0;i< listOfProducts.size();i++)
                     {
                         str=str+listOfProducts.get(i).getName()+",";
                     }
                     str=str.substring(0,str.length()-1);
+                    */
                     massStr=str.split(",");
                     comboBox=new JComboBox(massStr);
-                    label4.setText(listOfProducts.get(0).getUnit());
+                    //label4.setText(listOfProducts.get(0).getUnit());
+                    label4.setText(modelFridge.findIdOfProductByName(massStr[0]).getUnit());
                     contentPane.removeAll();
 
                     PoleVvoda.setText("");
@@ -694,20 +697,22 @@ public class MainForm extends JFrame {
                 contentPane.setVisible(true);
                 break;
             case 4:
-                 str="";
+                 str=modelFridge.getsAvailableProductsToOneRecipe(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()));
               //  String [] massStr;
               //  System.out.println(selectedRowOfRecipes);
-                listOfProducts=modelFridge.getsAvailableProductsToOneRecipe(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()));
+             //   listOfProducts=modelFridge.getsAvailableProductsToOneRecipe(Integer.parseInt(modelRecipe.getRecipe(selectedRowOfRecipes).getId()));
 
-                if(listOfProducts.size()==0)
+                if(Objects.equals(str, ""))
                 {
                     JOptionPane.showMessageDialog(null, "Нет продуктов, которых бы не было в рецепте. Добавьте желаемый продукт в таблицу 'продукты', а затем повторите операцию", "Ошибка добавления", JOptionPane.INFORMATION_MESSAGE);
                     // PoleVvoda.setText("");
                 }
                 else {
+                  /*
                     for (int i = 0; i < listOfProducts.size(); i++) {
                         str = str + listOfProducts.get(i).getName() + ",";
                     }
+                    */
                     backRecipeCheck=0;
                     menuBar.add(back);
                     setJMenuBar(menuBar);
@@ -727,7 +732,9 @@ public class MainForm extends JFrame {
                     label1.setText("Название продукта");
                     label2.setText("Количество");
                     label3.setText("Ед. измерения");
-                    label4.setText(listOfProducts.get(0).getUnit());
+               //     modelFridge.findIdOfProductByName((String)comboBox.getSelectedItem()).getUnit()
+                    //label4.setText(listOfProducts.get(0).getUnit());
+                    label4.setText(modelFridge.findIdOfProductByName(massStr[0]).getUnit());
                     label5.setText("Вы добавляете продукт к рецепту");
                     labelFake.setText(modelRecipe.getRecipe(selectedRowOfRecipes).getName());
 
@@ -766,9 +773,9 @@ public class MainForm extends JFrame {
         contentPane.removeAll();
         Table = new JTable();
 
-        listOfProducts=DBWorker.getAllFridge();
-
-        modelFridge= new FridgeModel(listOfProducts);
+      //  listOfProducts=DBWorker.getAllFridge();
+        modelFridge= new FridgeModel(DBWorker.getAllFridge());
+       // modelFridge= new FridgeModel(listOfProducts);
 
         Table.setModel(modelFridge);
       //  contentPane = this.getContentPane();
@@ -819,9 +826,9 @@ public class MainForm extends JFrame {
         switcher=3;
         contentPane.removeAll();
         Table = new JTable();
-        listOfRecipes=DBWorker.getAllRecipes();
-       // modelRecipe = new RecipeModel(DBWorker.getAllRecipes());
-        modelRecipe = new RecipeModel(listOfRecipes);
+     //   listOfRecipes=DBWorker.getAllRecipes();
+        modelRecipe = new RecipeModel(DBWorker.getAllRecipes());
+      //  modelRecipe = new RecipeModel(listOfRecipes);
         Table.setModel(modelRecipe);
       //  contentPane = this.getContentPane();
         contentPane.add(new JScrollPane(Table),BorderLayout.CENTER);

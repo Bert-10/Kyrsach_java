@@ -4,6 +4,7 @@ import db.DBWorker;
 import models.Connects.Connect;
 import models.Products.Product;
 
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,9 +65,9 @@ public class FridgeModel extends AbstractTableModel {
         return data.get(selectedRow);
     }
 
-    public void addProductToFridge(Product product)
+    public void addProductToFridge(int id, double amount)
     {
-        DBWorker.addProductToFridge(product);
+        DBWorker.addProductToFridge(new Product(id,amount));
     }
     public void deleteProductFromFridge(int n)
     {
@@ -74,9 +75,9 @@ public class FridgeModel extends AbstractTableModel {
      //  data.deleteProductFromFridge(n);
         fireTableDataChanged();
     }
-    public void changeProductInFridge(Product product)
+    public void changeProductInFridge(int id,double amount)
     {
-        DBWorker.changeProductInFridge(product);
+        DBWorker.changeProductInFridge(new Product(id, amount));
     }
 
     public Product findIdOfProductByName(String name)
@@ -86,11 +87,48 @@ public class FridgeModel extends AbstractTableModel {
 
     public void deleteConnect(int recipe_id,int product_id,int switcher){DBWorker.deleteConnect(DBWorker.findIdConnect(recipe_id, product_id),switcher);}
 
-    public ArrayList<Product> getsAvailableProductsToOneRecipe(int id){return DBWorker.getsAvailableProductsToOneRecipe(id);}
+    public String getsAvailableProductsToOneRecipe(int id)
+    {
+        String str="";
+        ArrayList<Product> listOfProducts=DBWorker.getsAvailableProductsToOneRecipe(id);
+        if(listOfProducts.size()==0)
+        {
+            return  str;
+        }
+        else
+        {
+            for(int i=0;i< listOfProducts.size();i++)
+            {
+                str=str+listOfProducts.get(i).getName()+",";
+            }
+            str=str.substring(0,str.length()-1);
+        }
 
-    public void addConnect(Connect connect){
-        DBWorker.addConnect(connect);}
+        return str;
+    }
+
+    public void addConnect(int recipe_id,int product_id,double amount){
+        DBWorker.addConnect(new Connect(recipe_id,product_id,amount));}
 
     public void changeConnect(int recipe_id,int product_id, double amount){DBWorker.changeConnect(new Connect(DBWorker.findIdConnect(recipe_id, product_id),recipe_id,product_id,amount));}
     public ArrayList<Product> getMissingProductsToRecipe(int id){return DBWorker.getMissingProductsToRecipe(id);}
+    public String productsNotInTheFridge()
+    {
+        String str="";
+        ArrayList<Product> listOfProducts=DBWorker.productsNotInTheFridge();
+        if(listOfProducts.size()==0)
+        {
+           return  str;
+        }
+        else
+        {
+            for(int i=0;i< listOfProducts.size();i++)
+            {
+                str=str+listOfProducts.get(i).getName()+",";
+            }
+            str=str.substring(0,str.length()-1);
+        }
+        return str;
+    }
+
 }
